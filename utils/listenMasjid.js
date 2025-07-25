@@ -1,5 +1,5 @@
-const db = require('../utils/firebase');
-const sendPush = require('../utils/sendPush');
+const db = require('./firebase');
+const sendPush = require('./sendPush');
 
 
 const listenToMasjid = (masjidId) => {
