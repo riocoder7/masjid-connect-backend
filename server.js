@@ -12,6 +12,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/follow-masjid', (req, res) => {
+    res.send('Follow Masjid endpoint is working');
   const { masjidId } = req.body;
 
   if (!masjidId) return res.status(400).json({ error: 'masjidId is required' });
