@@ -1,11 +1,11 @@
 // utils/firebase.js
 const admin = require('firebase-admin');
-const serviceAccount = require('../masjid-connect-d7f67-firebase-adminsdk-fbsvc-08d2af3259.json');
+const serviceAccount = require('../org/masjid-connect-service-account.json');
 
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: 'https://masjid-connect-d7f67-default-rtdb.asia-southeast1.firebasedatabase.app'
+    databaseURL: 'https://masjid-connect-2acb6-default-rtdb.asia-southeast1.firebasedatabase.app/'
   });
 }
 
