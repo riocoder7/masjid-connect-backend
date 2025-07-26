@@ -4,7 +4,7 @@ const listenToMasjid = require('./utils/listenMasjid');
 
 const app = express();
 app.use(bodyParser.json());
-
+app.use(express.json());
 const followedMasjids = new Set();
 
 app.get('/', (req, res) => {
@@ -12,10 +12,14 @@ app.get('/', (req, res) => {
 });
 
 app.post('/follow-masjid', (req, res) => {
-    
-  const { masjidId } = req.body;
-
-  if (!masjidId) return res.status(400).json({ error: 'masjidId is required' });
+  const masjidId = req.body?.masjidId;
+  
+  // Validate masjidId
+  
+  if (!masjidId){
+    console.error('❌ masjidId is missing in request body');
+    return res.status(400).json({ error: 'masjidId is required' });
+  } 
 
   if (!followedMasjids.has(masjidId)) {
     followedMasjids.add(masjidId);

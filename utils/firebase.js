@@ -1,6 +1,6 @@
 // utils/firebase.js
 const admin = require('firebase-admin');
-const serviceAccount = require('../org/masjid-connect-service-account.json');
+const serviceAccount = require('../org/masjid-connect-final.json');
 
 if (!admin.apps.length) {
   admin.initializeApp({
