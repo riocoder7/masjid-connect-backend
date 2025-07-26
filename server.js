@@ -21,7 +21,7 @@ app.post('/follow-masjid', (req, res) => {
     followedMasjids.add(masjidId);
     listenToMasjid(masjidId);
   }
-
+  console.log(`🔔 Now listening to masjidId: ${masjidId}`);
   res.status(200).json({ success: true, message: `Following masjid: ${masjidId}` });
 });
 
