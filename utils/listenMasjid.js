@@ -1,5 +1,5 @@
 const db = require('./firebase');
-const notifyAllMasjidUsers = require('./notifyAllMasjidUsers');
+const sendPush = require('./sendPush');
 
 const listenToMasjid = (masjidId) => {
   console.log(`📡 Listening to masjidId: ${masjidId}`);
@@ -33,7 +33,7 @@ const listenToMasjid = (masjidId) => {
         if (!seenAzan.has(id)) {
           seenAzan.add(id);
           console.log(`📢 New Azan: ${item.prayerName} - ${item.time}`);
-          await notifyAllMasjidUsers(pushTokens, `Azan: ${item.prayerName}`, item.time);
+          await sendPush(pushTokens, `Azan: ${item.prayerName}`, item.time);
         }
       }
 
