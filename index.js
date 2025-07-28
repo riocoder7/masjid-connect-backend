@@ -1,12 +1,17 @@
 const admin = require('firebase-admin');
-const axios = require('axios');
 const express = require('express');
-const serviceAccount = require('./org/masjid-connect-final.json');
-const masjidId = req.body?.masjidId;
- 
+const axios = require('axios');
+require('dotenv').config();
+const serviceAccountJson = JSON.parse(
+  Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64 || "", "base64").toString("utf8")
+);
+if (!serviceAccountJson) {
+  throw new Error('FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable is not set');
+}
+
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://masjid-connect-2acb6-default-rtdb.asia-southeast1.firebasedatabase.app/'
+  credential: admin.credential.cert(serviceAccountJson),
+  databaseURL: process.env.FIREBASE_REALDB_URL,
 });
 
 const db = admin.database();
@@ -21,8 +26,8 @@ const followedMasjids = new Set();
 app.get('/', (req, res) => res.send('✅ Backend is alive'));
 
 // 📥 API to follow a masjid
-app.post('/api/follow', (req, res) => {
-  const masjidId = req.body?.masjidId;
+app.post('/start-listen', (req, res) => {
+  const { masjidId } = req.body;
 
   if (!masjidId) {
     return res.status(400).json({ error: 'masjidId is required' });
@@ -41,17 +46,27 @@ app.post('/api/follow', (req, res) => {
 const sendPush = async (tokens, title, body) => {
   for (const token of tokens) {
     try {
-      await axios.post('https://exp.host/--/api/v2/push/send', {
-        to: token,
-        sound: 'default',
-        title,
-        body,
-      });
+      await axios.post(
+        'https://exp.host/--/api/v2/push/send',
+        {
+          to: token,
+          sound: 'default',
+          title,
+          body,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(`✅ Push sent to ${token}`);
     } catch (error) {
-      console.error('❌ Error sending push:', error.message);
+      console.error('❌ Error sending push:', error.response?.data || error.message);
     }
   }
 };
+
 
 // 👂 Setup Firebase listener for azan and announcements
 const listenToMasjid = (masjidId) => {
@@ -112,3 +127,43 @@ app.listen(PORT, () => {
 });
 
 
+
+
+
+
+// index.js or server.js (Express entry point)
+
+// const express = require('express');
+// const listenToMasjid = require('../utils/listenMasjid');
+// const bodyParser = require('body-parser');
+
+
+// const app = express();
+// const PORT = 3000;
+
+// const followedMasjids = new Set();
+
+
+// app.use(bodyParser.json());
+
+// app.post('/api/follow', async (req, res) => {
+//   const { masjidId } = req.body;
+
+//   if (!masjidId) {
+//     return res.status(400).json({ error: 'masjidId is required' });
+//   }
+
+//   if (!followedMasjids.has(masjidId)) {
+//     followedMasjids.add(masjidId);
+//     listenToMasjid(masjidId);
+//     console.log(`🔔 Now listening to masjidId: ${masjidId}`);
+//   } else {
+//     console.log(`✅ Already following masjidId: ${masjidId}`);
+//   }
+
+//   return res.status(200).json({ success: true, message: `Following masjid: ${masjidId}` });
+// });
+
+// app.listen(PORT, () => {
+//   console.log(`🚀 Express server running at http://localhost:${PORT}`);
+// });
