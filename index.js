@@ -21,7 +21,7 @@ const db = admin.database();
 const app = express();
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+// const PORT = process.env.PORT || 3000;
 
 // 🔐 Keep track of followed masjids (from multiple users)
 const followedMasjids = new Set();
@@ -43,6 +43,11 @@ app.post('/start-listen', (req, res) => {
   }
 
   res.status(200).json({ success: true, message: `Following masjidId: ${masjidId}` });
+});
+
+app.post('/api/notifications', (req, res) => {
+  console.log(req.body);
+  res.send('✅ Notification received');
 });
 
 // 🔔 Send push notification
@@ -124,11 +129,9 @@ const listenToMasjid = (masjidId) => {
   
 
 
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
-
+  app.listen(process.env.PORT || 3000, () => {
+    console.log('✅ Server running on port ' + (process.env.PORT || 3000));
+  });
 
 
 
