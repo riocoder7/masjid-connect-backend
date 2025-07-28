@@ -8,22 +8,25 @@ const serviceAccountJson = JSON.parse(
 if (!serviceAccountJson) {
   throw new Error('FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable is not set');
 }
-
+try {
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccountJson),
   databaseURL: process.env.FIREBASE_REALDB_URL,
 });
+} catch (err) {
+  console.error('🔥 Firebase init error:', err);
+}
 
 const db = admin.database();
 const app = express();
 app.use(express.json());
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // 🔐 Keep track of followed masjids (from multiple users)
 const followedMasjids = new Set();
 
-app.get('/', (req, res) => res.send('✅ Backend is alive'));
+app.get('/', (req, res) => res.send('✅ Masjid Connect Backend running...'));
 
 // 📥 API to follow a masjid
 app.post('/start-listen', (req, res) => {
@@ -129,41 +132,3 @@ app.listen(PORT, () => {
 
 
 
-
-
-// index.js or server.js (Express entry point)
-
-// const express = require('express');
-// const listenToMasjid = require('../utils/listenMasjid');
-// const bodyParser = require('body-parser');
-
-
-// const app = express();
-// const PORT = 3000;
-
-// const followedMasjids = new Set();
-
-
-// app.use(bodyParser.json());
-
-// app.post('/api/follow', async (req, res) => {
-//   const { masjidId } = req.body;
-
-//   if (!masjidId) {
-//     return res.status(400).json({ error: 'masjidId is required' });
-//   }
-
-//   if (!followedMasjids.has(masjidId)) {
-//     followedMasjids.add(masjidId);
-//     listenToMasjid(masjidId);
-//     console.log(`🔔 Now listening to masjidId: ${masjidId}`);
-//   } else {
-//     console.log(`✅ Already following masjidId: ${masjidId}`);
-//   }
-
-//   return res.status(200).json({ success: true, message: `Following masjid: ${masjidId}` });
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`🚀 Express server running at http://localhost:${PORT}`);
-// });
