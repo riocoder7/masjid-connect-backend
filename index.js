@@ -75,6 +75,37 @@ const sendPush = async (tokens, title, body) => {
   }
 };
 
+// ✅ SEND PUSH WITH AZAN SOUND
+const sendPushAzan = async (tokens, title, body) => {
+  for (const token of tokens) {
+    const payload = {
+      to: token,
+      sound: 'azan.mp3',
+      channelId: 'azan-channel',
+      priority: 'high',
+      title,
+      body,
+      
+    };
+
+    try {
+      const response = await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      console.log(`✅ Azan Push sent to ${token}:`, result);
+    } catch (error) {
+      console.error(`❌ Azan Push failed for ${token}:`, error.message);
+    }
+  }
+};
+
 
 // 👂 Setup Firebase listener for azan and announcements
 const listenToMasjid = (masjidId) => {
@@ -110,7 +141,7 @@ const listenToMasjid = (masjidId) => {
           if (!seenAzan.has(id)) {
             seenAzan.add(id);
             console.log(`📢 New Azan: ${item.prayerName} - ${item.time}`);
-            await sendPush(pushTokens, `Azan: ${item.prayerName}`, item.time);
+            await sendPushAzan(pushTokens, `Azan: ${item.prayerName}`, item.time);
           }
         }
   
