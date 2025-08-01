@@ -47,7 +47,7 @@ app.post('/start-listen', (req, res) => {
 
 app.post('/api/notifications', (req, res) => {
   console.log(req.body);
-  res.send('✅ Notification received');
+  res.send('✅ Notification received with new changes to the masjid data successfully.');
 });
 
 // 🔔 Send push notification
